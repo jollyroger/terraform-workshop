@@ -58,7 +58,7 @@ resource "aws_vpc_security_group_egress_rule" "bastion_web_access" {
 
 resource "aws_instance" "bastion" {
   count                = var.deploy_bastion ? 1 : 0
-  ami                  = data.aws_ami.debian.id
+  ami                  = data.aws_ami.this["debian"].id
   instance_type        = "t3.micro"
   subnet_id            = module.vpc.public_subnets[0]
   key_name             = local.public_key_id

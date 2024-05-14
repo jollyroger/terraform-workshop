@@ -91,8 +91,8 @@ resource "aws_vpc_security_group_egress_rule" "ec2_internet_access" {
 
 
 resource "aws_instance" "app" {
-  count                = var.instances_per_subnet * length(module.vpc.private_subnets)
-  ami                  = var.ami_id != "" ? var.ami_id : data.aws_ami.debian.id
+  count                = local.instance_count
+  ami                  = data.aws_ami.this[local.instance_distributions[count.index]].id
   instance_type        = "t3.micro"
   subnet_id            = module.vpc.private_subnets[count.index % length(module.vpc.private_subnets)]
   key_name             = local.public_key_id
@@ -105,24 +105,19 @@ resource "aws_instance" "app" {
   associate_public_ip_address = false
 
   user_data_replace_on_change = true
-  user_data = <<-EOF
-    #!/bin/sh
-    apt-get update
-    apt-get install -y nginx-light
-    echo 'Hello from instance app-${count.index}' > /var/www/html/index.html
-
-    wget -q --show-progress -O /tmp/ssm.deb \
-      https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
-    dpkg -i /tmp/ssm.deb
-    sleep 5
-    systemctl status amazon-ssm-agent
-  EOF
+  user_data = templatefile(local.instance_settings[count.index].cloud_init,
+    {
+      install_ssm = local.instance_settings[count.index].install_ssm,
+      app_id      = count.index
+    }
+  )
 
   tags = {
     Name         = "app-${count.index}"
-    distribution = "debian"
+    distribution = local.instance_distributions[count.index]
     role         = "app"
   }
+
 
   depends_on = [
     module.vpc.natgw_ids

@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+set -x
+apt-get update
+apt-get install -y nginx-light
+echo 'Hello from instance app-${app_id}' > /var/www/html/index.html
+
+%{ if install_ssm }
+wget -q --show-progress -O /tmp/ssm.deb https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+dpkg -i /tmp/ssm.deb
+sleep 5
+systemctl status amazon-ssm-agent
+%{ endif }

@@ -1,12 +1,6 @@
 variable "region" {
-  description = "AWS Default Region"
-}
-
-
-variable "ami_id" {
-  description = "ID of the AMI to use by EC2 Instances"
+  description = "AWS Region to create infrastructure in"
   type        = string
-  default     = ""
 }
 
 
