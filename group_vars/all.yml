@@ -1,0 +1,6 @@
+ansible_user: admin
+
+ansible_ssh_common_args: >-
+  -o StrictHostKeyChecking=no
+  -o UserKnownHostsFile=/dev/null
+  -J admin@{{ hostvars[groups['role_bastion'] | first]['public_ip_address'] }}
