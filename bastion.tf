@@ -62,12 +62,23 @@ resource "aws_instance" "bastion" {
   instance_type        = "t3.micro"
   subnet_id            = module.vpc.public_subnets[0]
   key_name             = local.public_key_id
+  iam_instance_profile = aws_iam_instance_profile.this.name
 
   vpc_security_group_ids = [
     aws_security_group.bastion_access.id
   ]
   associate_public_ip_address = true
   user_data_replace_on_change = true
+
+  user_data = <<-EOF
+    #!/bin/sh
+    set -e
+    set -x
+    wget -q --show-progress -O /tmp/ssm.deb https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+    dpkg -i /tmp/ssm.deb
+    sleep 5
+    systemctl status amazon-ssm-agent
+  EOF
 
   tags = {
     Name         = "bastion"

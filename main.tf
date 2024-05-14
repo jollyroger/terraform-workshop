@@ -91,11 +91,12 @@ resource "aws_vpc_security_group_egress_rule" "ec2_internet_access" {
 
 
 resource "aws_instance" "app" {
-  count         = var.instances_per_subnet * length(module.vpc.private_subnets)
-  ami           = var.ami_id != "" ? var.ami_id : data.aws_ami.debian.id
-  instance_type = "t3.micro"
-  subnet_id     = module.vpc.private_subnets[count.index % length(module.vpc.private_subnets)]
-  key_name      = local.public_key_id
+  count                = var.instances_per_subnet * length(module.vpc.private_subnets)
+  ami                  = var.ami_id != "" ? var.ami_id : data.aws_ami.debian.id
+  instance_type        = "t3.micro"
+  subnet_id            = module.vpc.private_subnets[count.index % length(module.vpc.private_subnets)]
+  key_name             = local.public_key_id
+  iam_instance_profile = aws_iam_instance_profile.this.name
 
   vpc_security_group_ids = [
     aws_security_group.ec2_lb_access.id
@@ -109,6 +110,12 @@ resource "aws_instance" "app" {
     apt-get update
     apt-get install -y nginx-light
     echo 'Hello from instance app-${count.index}' > /var/www/html/index.html
+
+    wget -q --show-progress -O /tmp/ssm.deb \
+      https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+    dpkg -i /tmp/ssm.deb
+    sleep 5
+    systemctl status amazon-ssm-agent
   EOF
 
   tags = {
