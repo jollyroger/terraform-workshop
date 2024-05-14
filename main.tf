@@ -95,12 +95,15 @@ resource "aws_instance" "app" {
   ami           = var.ami_id != "" ? var.ami_id : data.aws_ami.debian.id
   instance_type = "t3.micro"
   subnet_id     = module.vpc.private_subnets[count.index % length(module.vpc.private_subnets)]
+  key_name      = local.public_key_id
 
   vpc_security_group_ids = [
     aws_security_group.ec2_lb_access.id
   ]
+
   associate_public_ip_address = false
 
+  user_data_replace_on_change = true
   user_data = <<-EOF
     #!/bin/sh
     apt-get update
@@ -109,7 +112,9 @@ resource "aws_instance" "app" {
   EOF
 
   tags = {
-    "Name" = "app-${count.index}"
+    Name         = "app-${count.index}"
+    distribution = "debian"
+    role         = "app"
   }
 
   depends_on = [
