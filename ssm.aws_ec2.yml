@@ -1,0 +1,23 @@
+# aws_ec2.yml (Dynamic Inventory - Linux)
+# Install session-manager-plugin on your local machine first
+# https://docs.aws.amazon.com/systems-manager/latest/userguide/install-plugin-debian-and-ubuntu.html
+#
+# Then, create an S3 bucket in the specified region that would be used for file
+# transfer, and specify it in `ansible_aws_ssm_bucket_name` variable
+
+plugin: aws_ec2
+regions:
+  - eu-west-1
+hostnames:
+  - tag:Name
+keyed_groups:
+  - prefix: linux
+    key: tags['distribution']
+  - prefix: role
+    key: tags['role']
+
+compose:
+    ansible_host: instance_id
+    ansible_connection: '"community.aws.aws_ssm"'
+    ansible_aws_ssm_bucket_name: '"ssm-filetransfer-6455-4652-5250"'
+    ansible_aws_ssm_region: '"eu-west-1"'
