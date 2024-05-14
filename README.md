@@ -43,7 +43,7 @@
 | [aws_vpc_security_group_ingress_rule.bastion_ssh_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.bastion_to_ec2_ssh_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.ec2_lb_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule) | resource |
-| [aws_ami.debian](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
+| [aws_ami.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_iam_policy.ssm_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy) | data source |
 | [aws_iam_policy_document.assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [http_http.my_ip](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
@@ -52,10 +52,9 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_ami_id"></a> [ami\_id](#input\_ami\_id) | ID of the AMI to use by EC2 Instances | `string` | `""` | no |
 | <a name="input_deploy_bastion"></a> [deploy\_bastion](#input\_deploy\_bastion) | Set to true if you want to deploy bastion | `bool` | `false` | no |
 | <a name="input_instances_per_subnet"></a> [instances\_per\_subnet](#input\_instances\_per\_subnet) | Count of EC2 Instances to create in each Subnet | `number` | n/a | yes |
-| <a name="input_region"></a> [region](#input\_region) | AWS Default Region | `any` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | AWS Region to create infrastructure in | `string` | n/a | yes |
 | <a name="input_ssh_public_key"></a> [ssh\_public\_key](#input\_ssh\_public\_key) | SSH Public key contents to allow incoming SSH connections | `string` | `null` | no |
 | <a name="input_ssh_public_key_file"></a> [ssh\_public\_key\_file](#input\_ssh\_public\_key\_file) | Path to SSH Public key to deploy onto instances | `string` | `null` | no |
 
